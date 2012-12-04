@@ -55,6 +55,15 @@ class App {
   // Post "open" event.
   static void EmitOpenEvent(const std::string& path);
 
+  // Post "registerGlobalHotkeyError" event.
+  static void EmitRegisterGlobalHotkeyErrorEvent(uint8 keyCode, uint8 modifiers);
+
+  // Post "globalHotkeyActivated" event
+  static void EmitGlobalHotkeyActivatedEvent(uint8 keyCode, uint8 modifiers);
+
+  static void RegisterGlobalHotkey(uint8 keyCode, uint8 modifiers);
+  static void UnregisterGlobalHotkey(uint8 keyCode, uint8 modifiers);
+
  private:
   App();
 

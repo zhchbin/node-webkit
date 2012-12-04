@@ -91,3 +91,13 @@ IPC_MESSAGE_ROUTED1(ShellViewHostMsg_UpdateDraggableRegions,
 // The browser want to open a file.
 IPC_MESSAGE_CONTROL1(ShellViewMsg_Open,
                      std::string /* file name */)
+
+// Global hotkey activated.
+IPC_MESSAGE_CONTROL2(ShellViewMsg_GlobalHotkeyActivated,
+                     int /* key code */,
+                     int /* modifiers */)
+
+// Register global hotkey error.
+IPC_MESSAGE_CONTROL2(ShellViewMsg_RegisterGlobalHotkeyError,
+                     int /* key code */,
+                     int /* modifiers */)

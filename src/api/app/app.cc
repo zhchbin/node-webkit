@@ -25,6 +25,7 @@
 #include "base/message_loop.h"
 #include "base/values.h"
 #include "content/nw/src/api/api_messages.h"
+#include "content/nw/src/api/hotkey/hotkey.h"
 #include "content/nw/src/nw_package.h"
 #include "content/nw/src/nw_shell.h"
 #include "content/common/view_messages.h"
@@ -59,6 +60,18 @@ void App::Call(const std::string& method,
     return;
   } else if (method == "CloseAllWindows") {
     CloseAllWindows();
+    return;
+  } else if (method == "RegisterGlobalHotkey") {
+    int keyCode, modifiers;
+    arguments.GetInteger(0, &keyCode);
+    arguments.GetInteger(1, &modifiers);
+    RegisterGlobalHotkey(keyCode, modifiers);
+    return;
+  } else if (method == "UnregisterGlobalHotkey") {
+    int keyCode, modifiers;
+    arguments.GetInteger(0, &keyCode);
+    arguments.GetInteger(1, &modifiers);
+    UnregisterGlobalHotkey(keyCode, modifiers);
     return;
   }
 
@@ -119,6 +132,46 @@ void App::EmitOpenEvent(const std::string& path) {
   DCHECK(render_process_host != NULL);
 
   render_process_host->Send(new ShellViewMsg_Open(path));
+}
+
+// static
+void App::EmitRegisterGlobalHotkeyErrorEvent(uint8 keyCode, uint8 modifiers) {
+   // Get the app's renderer process.
+  content::RenderProcessHost* render_process_host = GetRenderProcessHost();
+  DCHECK(render_process_host != NULL);
+
+  render_process_host->Send(new ShellViewMsg_RegisterGlobalHotkeyError(
+          (int)keyCode,
+          (int)modifiers));
+}
+
+void App::EmitGlobalHotkeyActivatedEvent(uint8 keyCode, uint8 modifiers) {
+  // Get the app's renderer process.
+  content::RenderProcessHost* render_process_host = GetRenderProcessHost();
+  DCHECK(render_process_host != NULL);
+
+  render_process_host->Send(new ShellViewMsg_GlobalHotkeyActivated(
+          (int)keyCode,
+          (int)modifiers));
+}
+
+// static
+void App::RegisterGlobalHotkey(uint8 keyCode, uint8 modifiers) {
+  HotkeyItem item;
+  item.keyCode_ = keyCode;
+  item.modifiers_ = modifiers;
+  bool result = Hotkey::RegisterHotkey(item);
+  if (result != true) {
+    App::EmitRegisterGlobalHotkeyErrorEvent(keyCode, modifiers);
+  }
+}
+
+// static
+void App::UnregisterGlobalHotkey(uint8 keyCode, uint8 modifiers) {
+  HotkeyItem item;
+  item.keyCode_ = keyCode;
+  item.modifiers_ = modifiers;
+  Hotkey::UnregisterHotkey(item);
 }
 
 }  // namespace api

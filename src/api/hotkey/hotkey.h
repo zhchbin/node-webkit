@@ -10,7 +10,7 @@
 // 
 // The above copyright notice and this permission notice shall be included in al
 // l copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IM
 // PLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNES
 // S FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
@@ -18,38 +18,40 @@
 // ETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef CONTENT_NW_SRC_RENDERER_SHELL_RENDER_PROCESS_OBSERVER_H_
-#define CONTENT_NW_SRC_RENDERER_SHELL_RENDER_PROCESS_OBSERVER_H_
-
-#include <string>
+#ifndef CONTENT_NW_SRC_API_HOTKEY_HOTKEY_H_
+#define CONTENT_NW_SRC_API_HOTKEY_HOTKEY_H_
 
 #include "base/basictypes.h"
-#include "base/compiler_specific.h"
-#include "content/public/renderer/render_process_observer.h"
-#include "v8/include/v8.h"
 
-namespace content {
+namespace api {
 
-class ShellRenderProcessObserver : public RenderProcessObserver {
- public:
-  ShellRenderProcessObserver();
-  virtual ~ShellRenderProcessObserver();
+struct HotkeyItem {
+  bool operator==(const HotkeyItem& rhs) {
+    return (keyCode_ == rhs.keyCode_) && (modifiers_ == rhs.modifiers_); 
+  }
 
-  // RenderProcessObserver implementation.
-  virtual bool OnControlMessageReceived(const IPC::Message& message) OVERRIDE;
-  virtual void OnRenderProcessWillShutdown() OVERRIDE;
-  virtual void WebKitInitialized() OVERRIDE;
+  friend bool operator<(const HotkeyItem& lhs, const HotkeyItem& rhs) {
+    return lhs.keyCode_ < rhs.keyCode_;
+  }
 
- private:
-  void EmitEvent(v8::Local<v8::Value> argv[], uint32 size);
-
-  void OnOpen(const std::string& path);
-  void OnGlobalHotkeyActivated(int keyCode, int modifiers);
-  void OnRegisterGlobalHotkeyError(int keyCode, int modifiers);
-
-  DISALLOW_COPY_AND_ASSIGN(ShellRenderProcessObserver);
+  uint8 keyCode_;
+  uint8 modifiers_;
 };
 
-}  // namespace content
+class Hotkey {
+ public:
+  static bool RegisterHotkey(const HotkeyItem& item);
+  static void UnregisterHotkey(const HotkeyItem& item);
 
-#endif  // CONTENT_NW_SRC_RENDERER_SHELL_RENDER_PROCESS_OBSERVER_H_
+  // on hotkey activated
+  static void OnHotkeyActivated(const HotkeyItem& item); 
+ 
+ private:
+  Hotkey();
+
+  DISALLOW_COPY_AND_ASSIGN(Hotkey);  
+};
+
+} // namespace api
+
+#endif // CONTENT_NW_SRC_API_HOTKEY_HOTKEY_H_

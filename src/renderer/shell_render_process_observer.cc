@@ -28,7 +28,6 @@
 #include "webkit/support/gc_extension.h"
 #include "third_party/node/src/node.h"
 #include "third_party/node/src/req_wrap.h"
-#include "v8/include/v8.h"
 
 namespace content {
 
@@ -44,6 +43,10 @@ bool ShellRenderProcessObserver::OnControlMessageReceived(
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(ShellRenderProcessObserver, message)
     IPC_MESSAGE_HANDLER(ShellViewMsg_Open, OnOpen)
+    IPC_MESSAGE_HANDLER(ShellViewMsg_GlobalHotkeyActivated,
+                        OnGlobalHotkeyActivated)
+    IPC_MESSAGE_HANDLER(ShellViewMsg_RegisterGlobalHotkeyError,
+                        OnRegisterGlobalHotkeyError)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
 
@@ -60,7 +63,8 @@ void ShellRenderProcessObserver::WebKitInitialized() {
   RenderThread::Get()->RegisterExtension(new api::DispatcherBindings());
 }
 
-void ShellRenderProcessObserver::OnOpen(const std::string& path) {
+void ShellRenderProcessObserver::EmitEvent(v8::Local<v8::Value> argv[],
+    uint32 size) {
   v8::HandleScope handle_scope;
 
   // the App object is stored in process["_nw_app"].
@@ -68,15 +72,38 @@ void ShellRenderProcessObserver::OnOpen(const std::string& path) {
       node::process_symbol)->ToObject();
   v8::Local<v8::String> app_symbol = v8::String::NewSymbol("_nw_app");
   if (process->Has(app_symbol)) {
-    // process["_nw_app"].emit(path).
     v8::Local<v8::Object> app = process->Get(app_symbol)->ToObject();
     v8::Local<v8::Function> emit = v8::Local<v8::Function>::Cast(
         app->Get(v8::String::New("emit")));
-    v8::Local<v8::Value> argv[] = {
-        v8::String::New("open"), v8::String::New(path.c_str())
-    };
-    emit->Call(app, 2, argv);
+    emit->Call(app, size, argv);
   }
+}
+
+void ShellRenderProcessObserver::OnOpen(const std::string& path) {
+  v8::Local<v8::Value> argv[] = {
+    v8::String::New("open"), v8::String::New(path.c_str())
+  };
+  EmitEvent(argv, 2);
+}
+
+void ShellRenderProcessObserver::OnGlobalHotkeyActivated(int keyCode,
+    int modifiers) {
+  v8::Local<v8::Value> argv[] = {
+    v8::String::New("globalHotkeyActivated"),
+    v8::Uint32::New(keyCode),
+    v8::Uint32::New(modifiers)
+  };
+  EmitEvent(argv, 3);
+}
+
+void ShellRenderProcessObserver::OnRegisterGlobalHotkeyError(int keyCode,
+    int modifiers) {
+  v8::Local<v8::Value> argv[] = {
+    v8::String::New("registerGlobalHotkeyError"),
+    v8::Uint32::New(keyCode),
+    v8::Uint32::New(modifiers)
+  };
+  EmitEvent(argv, 3);
 }
 
 }  // namespace content
