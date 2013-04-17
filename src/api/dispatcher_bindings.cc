@@ -161,6 +161,8 @@ DispatcherBindings::RequireNwGui(const v8::Arguments& args) {
   RequireFromResource(args.This(),
       NwGui, v8::String::New("shell.js"), IDR_NW_API_SHELL_JS);
   RequireFromResource(args.This(),
+      NwGui, v8::String::New("hotkey.js"), IDR_NW_API_HOTKEY_JS);
+  RequireFromResource(args.This(),
       NwGui, v8::String::New("app.js"), IDR_NW_API_APP_JS);
 
   return scope.Close(NwGui);

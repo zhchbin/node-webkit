@@ -27,6 +27,8 @@
 #include "content/nw/src/api/app/app.h"
 #include "content/nw/src/api/base/base.h"
 #include "content/nw/src/api/clipboard/clipboard.h"
+#include "content/nw/src/api/hotkey/global_hotkey_manager.h"
+#include "content/nw/src/api/hotkey/hotkey.h"
 #include "content/nw/src/api/menu/menu.h"
 #include "content/nw/src/api/menuitem/menuitem.h"
 #include "content/nw/src/api/shell/shell.h"
@@ -62,6 +64,11 @@ void DispatcherHost::SendEvent(Base* object,
 
 bool DispatcherHost::Send(IPC::Message* message) {
   return content::RenderViewHostObserver::Send(message);
+}
+
+void DispatcherHost::RenderViewHostDestroyed(
+    content::RenderViewHost* render_view_host) {
+  GlobalHotKeyManager::GetInstance()->RemoveHotKeyObjectByDispatcherHost(this);
 }
 
 bool DispatcherHost::OnMessageReceived(const IPC::Message& message) {
@@ -104,6 +111,9 @@ void DispatcherHost::OnAllocateObject(int object_id,
         new Clipboard(object_id, this, option), object_id);
   } else if (type == "Window") {
     objects_registry_.AddWithID(new Window(object_id, this, option), object_id);
+  } else if (type == "HotKey") {
+    GlobalHotKeyManager::GetInstance()->AddHotKeyObject(
+        new HotKey(object_id, this, option), object_id);
   } else {
     LOG(ERROR) << "Allocate an object of unknow type: " << type;
     objects_registry_.AddWithID(new Base(object_id, this, option), object_id);
@@ -113,6 +123,7 @@ void DispatcherHost::OnAllocateObject(int object_id,
 void DispatcherHost::OnDeallocateObject(int object_id) {
   DLOG(INFO) << "OnDeallocateObject: object_id:" << object_id;
   objects_registry_.Remove(object_id);
+  GlobalHotKeyManager::GetInstance()->RemoveHotKeyObject(object_id);
 }
 
 void DispatcherHost::OnCallObjectMethod(

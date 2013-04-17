@@ -64,6 +64,9 @@ class DispatcherHost : public content::RenderViewHostObserver {
     return content::RenderViewHostObserver::render_view_host();
   }
 
+  virtual void RenderViewHostDestroyed(
+      content::RenderViewHost* render_view_host) OVERRIDE;
+
  private:
   IDMap<Base, IDMapOwnPointer> objects_registry_;
 

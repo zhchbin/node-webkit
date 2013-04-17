@@ -25,6 +25,7 @@
 #include "base/message_loop.h"
 #include "base/values.h"
 #include "content/nw/src/api/api_messages.h"
+#include "content/nw/src/api/hotkey/global_hotkey_manager.h"
 #include "content/nw/src/nw_package.h"
 #include "content/nw/src/nw_shell.h"
 #include "content/common/view_messages.h"
@@ -59,6 +60,16 @@ void App::Call(const std::string& method,
     return;
   } else if (method == "CloseAllWindows") {
     CloseAllWindows();
+    return;
+  } else if (method == "RegisterGlobalHotKey") {
+    int object_id = -1;
+    arguments.GetInteger(0, &object_id);
+    GlobalHotKeyManager::GetInstance()->Register(object_id);
+    return;
+  } else if (method == "UnregisterGlobalHotKey") {
+    int object_id = -1;
+    arguments.GetInteger(0, &object_id);
+    GlobalHotKeyManager::GetInstance()->Unregister(object_id);
     return;
   }
 

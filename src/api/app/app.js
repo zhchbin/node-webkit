@@ -19,6 +19,7 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 var argv, fullArgv;
+var v8_util = process.binding('v8_util');
 
 function App() {
 }
@@ -37,6 +38,20 @@ App.prototype.quit = function() {
 
 App.prototype.closeAllWindows = function() {
   nw.callStaticMethod('App', 'CloseAllWindows', [ ]);
+}
+
+App.prototype.registerGlobalHotKey = function(hotkey) {
+  if (v8_util.getConstructorName(hotkey) != "HotKey")
+    throw new TypeError("Invaild parameter, need Hotkey object.");
+
+  nw.callStaticMethod('App', 'RegisterGlobalHotKey', [ hotkey.id ]);
+}
+
+App.prototype.unregisterGlobalHotKey = function(hotkey) {
+  if (v8_util.getConstructorName(hotkey) != "HotKey")
+    throw new TypeError("Invaild parameter, need Hotkey object.");
+
+  nw.callStaticMethod('App', 'UnregisterGlobalHotKey', [ hotkey.id ]);
 }
 
 App.prototype.__defineGetter__('argv', function() {
