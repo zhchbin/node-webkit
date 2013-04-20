@@ -21,16 +21,45 @@
 #include "content/nw/src/api/hotkey/global_hotkey_manager.h"
 
 #include "content/nw/src/api/dispatcher_host.h"
-#include "content/public/browser/browser_thread.h"
-#include "ui/base/accelerators/accelerator.h"
-
-using content::BrowserThread;
+#include "content/nw/src/api/hotkey/command.h"
+#include "content/nw/src/api/hotkey/hotkey_constants.h"
+#include "content/nw/src/api/hotkey/hotkey_handler.h"
 
 namespace api {
+
+GlobalHotKeyManager::GlobalHotKeyManager() {
+}
+
+GlobalHotKeyManager::~GlobalHotKeyManager() {
+}
 
 // static
 GlobalHotKeyManager* GlobalHotKeyManager::GetInstance() {
   return Singleton<GlobalHotKeyManager>::get();
+}
+
+void GlobalHotKeyManager::Register(int object_id) {
+  if (!hot_key_handler_.get())
+    hot_key_handler_.reset(new HotKeyHandler);
+
+  HotKey *hot_key = GetHotKeyObject(object_id);
+  if (hot_key == NULL)
+    return;
+  const std::string& hotkey_str = hot_key->GetCombination();
+  Command command(hotkey_str);
+  if (command.get_error() != "") {
+    hot_key->OnFailed(command.get_error());
+    return;
+  }
+
+  bool is_add_success = hot_key_handler_->add_hot_key(command.accelerator(),
+                                                      object_id);
+  if (!is_add_success)
+    hot_key->OnFailed(hotkey_errors::kRegisterHotkeyFailed);
+}
+
+void GlobalHotKeyManager::Unregister(int object_id) {
+  hot_key_handler_->remove_hot_key(object_id);
 }
 
 void GlobalHotKeyManager::AddHotKeyObject(HotKey* hot_key, int object_id) {

@@ -24,7 +24,6 @@
 #include "base/id_map.h"
 #include "base/memory/singleton.h"
 #include "base/memory/scoped_ptr.h"
-#include "content/nw/src/api/hotkey/global_hotkey_manager.h"
 #include "content/nw/src/api/hotkey/hotkey.h"
 
 namespace ui {
@@ -34,10 +33,7 @@ class Accelerator;
 namespace api {
 
 class DispatcherHost;
-
-#if defined(OS_WIN)
 class HotKeyHandler;
-#endif
 
 class GlobalHotKeyManager {
  public:
@@ -59,13 +55,10 @@ class GlobalHotKeyManager {
   GlobalHotKeyManager();
   friend struct DefaultSingletonTraits<GlobalHotKeyManager>;
 
-  uint8 GetNativeModifiers(const ui::Accelerator& accelerator);
   HotKey* GetHotKeyObject(int object_id);
 
   IDMap<HotKey, IDMapOwnPointer> hot_key_objects_registry_;
-#if defined(OS_WIN)
   scoped_ptr<HotKeyHandler> hot_key_handler_;
-#endif
 
   DISALLOW_COPY_AND_ASSIGN(GlobalHotKeyManager);
 };
