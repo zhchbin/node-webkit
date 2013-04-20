@@ -27,7 +27,6 @@
 
 #if defined(OS_WIN)
 #include "ui/base/win/window_impl.h"
-#include "ui/gfx/rect.h"
 #elif defined(OS_LINUX)
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>

@@ -113,6 +113,7 @@
         'src/api/hotkey/hotkey_constants.h',
         'src/api/hotkey/hotkey_handler.h',
         'src/api/hotkey/hotkey_handler_gtk.cc',
+        'src/api/hotkey/hotkey_handler_win.cc',
         'src/api/hotkey/global_hotkey_manager.cc',
         'src/api/hotkey/global_hotkey_manager.h',
         'src/api/window_bindings.cc',
