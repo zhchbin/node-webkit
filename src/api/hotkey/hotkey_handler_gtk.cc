@@ -65,7 +65,7 @@ bool HotKeyHandler::add_hot_key(const ui::Accelerator& accelerator,
 
   for (size_t index = 0; index < arraysize(lock_modifiers); ++index) {
     XGrabKey(display, keycode, modifiers | lock_modifiers[index],
-             x_win, true, GrabModeAsync, GrabModeAsync);  
+             x_win, false, GrabModeAsync, GrabModeAsync);
   }
 
   HotkeyItem item(modifiers, keycode);
@@ -105,13 +105,17 @@ uint32 HotKeyHandler::GetNativeModifiers(const ui::Accelerator& accelerator) {
 GdkFilterReturn HotKeyHandler::OnXEvent(GdkXEvent* xevent, GdkEvent* event) {
   XEvent* xev = static_cast<XEvent*>(xevent);
 
-  if (xev->type == KeyPress) {
+  if (xev->type == KeyPress || xev->type == KeyRelease) {
     // remove NumLock, CapsLock and ScrollLock from key state.
     uint32 modifiers = xev->xkey.state & ~(lock_modifiers[7]);
     HotkeyItem item(modifiers, xev->xkey.keycode);
     std::map<HotkeyItem, int>::iterator it = valid_hotkeys_.find(item);
-    if (it != valid_hotkeys_.end())
-      GlobalHotKeyManager::GetInstance()->OnHotKeyActivated(it->second);
+    if (it != valid_hotkeys_.end()) {
+      if (xev->type == KeyPress)
+        GlobalHotKeyManager::GetInstance()->OnHotKeyDown(it->second);
+      else
+        GlobalHotKeyManager::GetInstance()->OnHotKeyUp(it->second);
+    }
   }
 
   return GDK_FILTER_CONTINUE;

@@ -84,10 +84,16 @@ HotKey* GlobalHotKeyManager::GetHotKeyObject(int object_id) {
   return hot_key_objects_registry_.Lookup(object_id);
 }
 
-void GlobalHotKeyManager::OnHotKeyActivated(int object_id) {
+void GlobalHotKeyManager::OnHotKeyDown(int object_id) {
   HotKey* hot_key = GetHotKeyObject(object_id);
   if (hot_key != NULL)
-    hot_key->OnActivated();
+    hot_key->OnKeyDown();
+}
+
+void GlobalHotKeyManager::OnHotKeyUp(int object_id) {
+  HotKey* hot_key = GetHotKeyObject(object_id);
+  if (hot_key != NULL)
+    hot_key->OnKeyUp();
 }
 
 }  // namespace api

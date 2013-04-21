@@ -30,16 +30,23 @@ function HotKey(option) {
   else
     option.key = String(option.key);
 
-  if (option.hasOwnProperty('activated')) {
-    if (typeof option.activated != 'function')
-      throw new TypeError("'activated' must be a valid Function");
+  if (option.hasOwnProperty('keydown')) {
+    if (typeof option.keydown != 'function')
+      throw new TypeError("'keydown' must be a valid function.");
     else
-      this.activated = option.activated;
+      this.keydown = option.keydown;
+  }
+
+  if (option.hasOwnProperty('keyup')) {
+    if (typeof option.keyup != 'function')
+      throw new TypeError("'keyup' must be a valid function.");
+    else
+      this.keyup = option.keyup;
   }
 
   if (option.hasOwnProperty('failed')) {
     if (typeof option.failed != 'function')
-      throw new TypeError("'failed' must be a valid Function");
+      throw new TypeError("'failed' must be a valid function.");
     else
       this.failed = option.failed;
   }
@@ -50,16 +57,16 @@ function HotKey(option) {
 require('util').inherits(HotKey, exports.Base);
 
 HotKey.prototype.handleEvent = function(ev) {
-  if (ev == 'activated') {
-    // Emit activated handler
-    if (typeof this.activated == 'function')
-      this.activated();
+  if (ev == 'keydown') {
+    // Emit keydown handler
+    if (typeof this.keydown == 'function')
+      this.keydown();
+  } else if (ev == 'keyup') {
+    if (typeof this.keyup == 'function')
+      this.keyup();
   } else if (ev == 'failed') {
-    // Emit activated handler
-    if (typeof this.failed == 'function') {
+    if (typeof this.failed == 'function')
       this.failed(arguments[1]);
-      return;
-    }
   }
 
   // Emit generate event handler

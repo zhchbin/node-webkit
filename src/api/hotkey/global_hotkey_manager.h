@@ -49,7 +49,8 @@ class GlobalHotKeyManager {
   void RemoveHotKeyObjectByDispatcherHost(
      const DispatcherHost *dispatcher_host);
 
-  void OnHotKeyActivated(int object_id);
+  void OnHotKeyDown(int object_id);
+  void OnHotKeyUp(int object_id);
 
  private:
   GlobalHotKeyManager();

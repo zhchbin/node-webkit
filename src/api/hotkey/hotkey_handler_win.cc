@@ -87,7 +87,7 @@ LRESULT HotKeyHandler::OnHotKey(UINT uMsg, WPARAM wParam,
   for (std::map<HotkeyItem, int>::iterator it = valid_hotkeys_.begin();
        it != valid_hotkeys_.end(); it++)
     if (it->second == id)
-      GlobalHotKeyManager::GetInstance()->OnHotKeyActivated(id);
+      GlobalHotKeyManager::GetInstance()->OnHotKeyDown(id);
 
   return TRUE;
 }

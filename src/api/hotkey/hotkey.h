@@ -34,8 +34,9 @@ class HotKey : public Base {
          const base::DictionaryValue& option);
   virtual ~HotKey();
 
-  void OnActivated();
   void OnFailed(const std::string &failed_msg);
+  void OnKeyDown();
+  void OnKeyUp();
 
   const std::string& GetCombination() const {
     return combination_;

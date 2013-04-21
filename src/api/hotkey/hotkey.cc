@@ -38,11 +38,6 @@ HotKey::HotKey(int id,
 HotKey::~HotKey() {
 }
 
-void HotKey::OnActivated() {
-  base::ListValue args;
-  dispatcher_host()->SendEvent(this, "activated", args);
-}
-
 void HotKey::OnFailed(const std::string& failed_msg) {
   base::ListValue args;
   args.AppendString(failed_msg);
@@ -50,5 +45,16 @@ void HotKey::OnFailed(const std::string& failed_msg) {
   // error.
   dispatcher_host()->SendEvent(this, "failed", args);
 }
+
+void HotKey::OnKeyDown() {
+  base::ListValue args;
+  dispatcher_host()->SendEvent(this, "keydown", args);
+}
+
+void HotKey::OnKeyUp() {
+  base::ListValue args;
+  dispatcher_host()->SendEvent(this, "keyup", args);
+}
+
 
 }  // namespace api
