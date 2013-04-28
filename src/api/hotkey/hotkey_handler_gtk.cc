@@ -63,12 +63,17 @@ bool HotKeyHandler::add_hot_key(const ui::Accelerator& accelerator,
   uint32 modifiers = GetNativeModifiers(accelerator);
   int keycode = XKeysymToKeycode(display, accelerator.key_code());
 
+  HotkeyItem item(modifiers, keycode);
+  // Add hot key failed if it has been registered. This is aim to keep
+  // consistency with this api on windows platfrom.
+  if (valid_hotkeys_.find(item) != valid_hotkeys_.end())
+    return false;
+
   for (size_t index = 0; index < arraysize(lock_modifiers); ++index) {
     XGrabKey(display, keycode, modifiers | lock_modifiers[index],
              x_win, false, GrabModeAsync, GrabModeAsync);
   }
 
-  HotkeyItem item(modifiers, keycode);
   valid_hotkeys_[item] = object_id;
   return true;
 }
