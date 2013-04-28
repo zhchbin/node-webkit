@@ -40,11 +40,23 @@ static uint32 lock_modifiers[] = {
    Mod2Mask | LockMask | Mod5Mask
 };
 
+int X11EmptyErrorHandler(Display* d, XErrorEvent* error) {
+  LOG(ERROR)
+      << "X error received: "
+      << "serial " << error->serial << ", "
+      << "error_code " << static_cast<int>(error->error_code) << ", "
+      << "request_code " << static_cast<int>(error->request_code) << ", "
+      << "minor_code " << static_cast<int>(error->minor_code);
+  return 0;
+}
+
 HotKeyHandler::HotKeyHandler() 
     : root_win(gdk_get_default_root_window()),
       x_win(gdk_x11_get_default_root_xwindow()) {
   display = static_cast<Display*>(GDK_WINDOW_XDISPLAY(root_win));
   gdk_window_add_filter(root_win, &HotKeyHandler::OnXEventThunk, this);
+
+  XSetErrorHandler(X11EmptyErrorHandler);
 }
 
 HotKeyHandler::~HotKeyHandler() {
