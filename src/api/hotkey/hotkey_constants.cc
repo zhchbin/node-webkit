@@ -43,5 +43,5 @@ namespace hotkey_modifiers {
 const char kCtrl[] = "CTRL";
 const char kAlt[] = "ALT";
 const char kCommand[] = "COMMAND";
-const char kShirt[] = "SHIRT";
+const char kShift[] = "SHIFT";
 }  // namespace hotkey_modifiers

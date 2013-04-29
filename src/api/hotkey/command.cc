@@ -99,7 +99,7 @@ ui::Accelerator ParseImpl(const std::string& accelerator,
       }
     } else if (tokens[i] == modifiers::kAlt) {
       modifiers |= ui::EF_ALT_DOWN;
-    } else if (tokens[i] == modifiers::kShirt) {
+    } else if (tokens[i] == modifiers::kShift) {
       modifiers |= ui::EF_SHIFT_DOWN;
     } else if (tokens[i].size() == 1) {
       if (key != ui::VKEY_UNKNOWN) {

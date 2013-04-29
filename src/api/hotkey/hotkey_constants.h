@@ -38,7 +38,7 @@ namespace hotkey_modifiers {
   extern const char kCtrl[];
   extern const char kAlt[];
   extern const char kCommand[];
-  extern const char kShirt[];
+  extern const char kShift[];
 }  // namespace hotkey_modifiers
 
 #endif  // CONTENT_NW_SRC_API_HOTKEY_HOTKEY_CONSTANTS_H_
