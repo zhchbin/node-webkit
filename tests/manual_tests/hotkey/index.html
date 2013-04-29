@@ -1,0 +1,62 @@
+<!DOCTYPE>
+<html>
+  <head>
+  <title>HotKey Demo</title>
+    <script type="text/javascript">
+      function log(msg) {
+        document.getElementById('log').textContent += msg + '\n';
+      }
+
+      function error(msg) {
+        log(JSON.stringify(this) + ": Error, " + msg);
+      }
+
+      function keydown() {
+        log(JSON.stringify(this) + ": keydown");
+      }
+
+      function keyup() {
+        // Note: on windows keyup will never be triggered because the api didn't
+        // implement this yet.
+        log(JSON.stringify(this) + ": keyup");
+      }
+
+      var gui = require('nw.gui');
+      var hotkey1 = new gui.HotKey({key: "Alt+Shift+A"});
+      hotkey1.failed = error;
+      hotkey1.keydown = keydown;
+      hotkey1.keyup = keyup;
+
+      var hotkey2 = new gui.HotKey({key: "Ctrl+K"});
+      hotkey2.failed = error;
+      hotkey2.keydown = keydown;
+      hotkey2.keyup = keyup;
+
+      var hotkey3 = new gui.HotKey({key: "Alt+B"});
+      hotkey3.failed = error;
+      hotkey3.keydown = keydown;
+      hotkey3.keyup = keyup;
+
+      var hotkey4 = new gui.HotKey({key: "Ctrl+Alt+C"});
+      hotkey4.failed = error;
+      hotkey4.keydown = keydown;
+      hotkey4.keyup = keyup;
+
+      gui.App.registerGlobalHotKey(hotkey1)
+      gui.App.registerGlobalHotKey(hotkey2);
+      gui.App.registerGlobalHotKey(hotkey3);
+      gui.App.registerGlobalHotKey(hotkey4);
+
+      function unregister() {
+        gui.App.unregisterGlobalHotKey(hotkey2);
+        gui.App.unregisterGlobalHotKey(hotkey3);
+      }
+    </script>
+  </head>
+
+  <body>
+    <div>Now you can try to press 'Alt+Shit+A', 'Ctrl+K', 'Alt+B', 'Ctrl+Alt+C'.</div>
+    <button onclick="unregister()">Click Me to Unregister HotKey 'Ctrl+K' and 'Alt+B'</button>
+    <pre id="log"></pre>
+	</body>
+</html>
