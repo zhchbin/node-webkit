@@ -24,11 +24,13 @@ function HotKey(option) {
   if (typeof option != 'object')
     throw new TypeError('Invalid option.');
 
-  if (!option.hasOwnProperty('key'))
+  if (!option.hasOwnProperty('key')) {
     throw new TypeError("A normal hotkey must have a 'key', which specifies \
                         the combinations of keys, like 'Ctrl+Alt+S'.");
-  else
+  } else {
     option.key = String(option.key);
+    this.key = option.key;
+  }
 
   if (option.hasOwnProperty('keydown')) {
     if (typeof option.keydown != 'function')
